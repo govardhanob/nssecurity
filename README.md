@@ -10,7 +10,8 @@ Angamaly, Tripunithura and nearby areas.
 index.html          All page markup + inline SVG icon sprite
 css/style.css        All styles (no framework, custom properties for the design tokens)
 js/main.js           Mobile menu, scroll effects, GSAP animations, WhatsApp-prefill contact form
-images/              hero.webp, installation.webp, property.webp, favicon.svg
+images/              logo.png, hero.webp, installation.webp, property.webp,
+                     favicon-16/32/48.png, apple-touch-icon.png
 ```
 
 No build step, no dependencies to install beyond a browser. GSAP is loaded from a CDN
