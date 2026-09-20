@@ -61,3 +61,25 @@ if (typeof gsap !== 'undefined' && !prefersReducedMotion) {
   document.querySelectorAll('.hero-badge, .hero h1, .hero .lead, .hero-ctas, .hero-meta, .hero-image-card')
     .forEach((el) => { el.style.opacity = '1'; el.style.transform = 'none'; });
 }
+
+// --- Scroll reveal ---
+const revealTargets = document.querySelectorAll(
+  '.section-eyebrow, .section-title, .section-subtitle, .service-card, .solution-card, ' +
+  '.brand-card, .process-step, .area-card, .benefit-card, .faq-item, .checklist-item, .contact-panel'
+);
+
+if (typeof gsap !== 'undefined' && !prefersReducedMotion && 'IntersectionObserver' in window) {
+  revealTargets.forEach((el) => { gsap.set(el, { opacity: 0, y: 20 }); });
+
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      gsap.to(entry.target, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+  revealTargets.forEach((el) => revealObserver.observe(el));
+} else {
+  revealTargets.forEach((el) => { el.style.opacity = '1'; el.style.transform = 'none'; });
+}
