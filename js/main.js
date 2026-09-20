@@ -83,3 +83,32 @@ if (typeof gsap !== 'undefined' && !prefersReducedMotion && 'IntersectionObserve
 } else {
   revealTargets.forEach((el) => { el.style.opacity = '1'; el.style.transform = 'none'; });
 }
+
+// --- Contact form -> WhatsApp prefill ---
+const quoteForm = document.getElementById('quote-form');
+quoteForm?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = new FormData(quoteForm);
+  const fullname = (data.get('fullname') || '').toString().trim();
+  const phone = (data.get('phone') || '').toString().trim();
+  const location = (data.get('location') || '').toString().trim();
+  const service = (data.get('service') || '').toString().trim();
+  const message = (data.get('message') || '').toString().trim();
+
+  if (!fullname || !phone || !location) {
+    quoteForm.reportValidity();
+    return;
+  }
+
+  const lines = [
+    `Hi NS Security Solutions, I'd like a quote.`,
+    `Name: ${fullname}`,
+    `Phone: ${phone}`,
+    `Location: ${location}`,
+    `Requirement: ${service}`,
+  ];
+  if (message) lines.push(`Details: ${message}`);
+
+  const text = encodeURIComponent(lines.join('\n'));
+  window.open(`https://wa.me/917907582779?text=${text}`, '_blank', 'noopener,noreferrer');
+});
