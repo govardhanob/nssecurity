@@ -107,6 +107,38 @@ if (hudTimestamp) {
   setInterval(tickTimestamp, 1000);
 }
 
+// --- Watching camera: fixed badge, head swivels to track scroll direction ---
+const watchCam = document.getElementById('watch-cam');
+const watchCamHead = document.getElementById('watch-cam-head');
+if (watchCam) {
+  function updateWatchCamVisibility() {
+    watchCam.classList.toggle('is-visible', window.scrollY > 280);
+  }
+  window.addEventListener('scroll', updateWatchCamVisibility, { passive: true });
+  updateWatchCamVisibility();
+
+  if (watchCamHead && !prefersReducedMotion) {
+    let lastY = window.scrollY;
+    let targetAngle = 0;
+    let currentAngle = 0;
+    let idleTimer = null;
+
+    window.addEventListener('scroll', () => {
+      const dy = window.scrollY - lastY;
+      lastY = window.scrollY;
+      targetAngle = Math.max(-28, Math.min(28, dy * 1.4));
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => { targetAngle = 0; }, 220);
+    }, { passive: true });
+
+    (function raf() {
+      currentAngle += (targetAngle - currentAngle) * 0.12;
+      watchCamHead.setAttribute('transform', `rotate(${currentAngle.toFixed(2)} 32 18)`);
+      requestAnimationFrame(raf);
+    })();
+  }
+}
+
 // --- Contact form -> WhatsApp prefill ---
 const quoteForm = document.getElementById('quote-form');
 quoteForm?.addEventListener('submit', (e) => {

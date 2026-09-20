@@ -58,7 +58,10 @@ a { color: inherit; text-decoration: none; }
 .site-header.is-scrolled { box-shadow: 0 8px 24px rgba(0,0,0,.35); background: rgba(4,13,22,.97); }
 .site-header .container { height: 5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 
-.brand { display: flex; align-items: center; gap: .875rem; }
+.brand { display: flex; align-items: center; gap: .875rem; min-width: 0; }
+.brand-text { min-width: 0; overflow: hidden; }
+.brand-name, .brand-tag { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-ctas { flex-shrink: 0; }
 .brand-mark {
   width: 2.75rem; height: 2.75rem; border-radius: .875rem;
   background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-hover));
@@ -351,8 +354,9 @@ section { position: relative; }
 .form-note { font-size: .7rem; color: #94a3b8; text-align: center; margin-top: .75rem; }
 
 /* --- Footer --- */
-.site-footer { background: var(--navy-darkest); color: #94a3b8; padding: 4rem 0 6rem; border-top: 1px solid rgba(28,50,73,.5); }
-@media (min-width: 640px) { .site-footer { padding-bottom: 4rem; } }
+.site-footer { background: var(--navy-darkest); color: #94a3b8; padding: 4rem 0 9.5rem; border-top: 1px solid rgba(28,50,73,.5); }
+@media (min-width: 640px) { .site-footer { padding-bottom: 6rem; } }
+@media (min-width: 1400px) { .site-footer { padding-bottom: 4rem; } }
 .footer-grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr; padding-bottom: 3rem; }
 @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1024px) { .footer-grid { grid-template-columns: 4fr 3fr 2fr 3fr; } }
@@ -386,4 +390,31 @@ section { position: relative; }
 .whatsapp-float { animation: wa-pulse-ring 4.5s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .whatsapp-float { animation: none; }
+}
+
+/* --- Watching camera: fixed badge whose head swivels with scroll direction --- */
+.watch-cam {
+  position: fixed; top: 7rem; left: 1.25rem; z-index: 44;
+  width: 3rem; height: 3rem; border-radius: 50%;
+  background: rgba(4,13,22,.85); border: 1px solid var(--navy-border);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(.8); pointer-events: none;
+  transition: opacity .4s ease, transform .4s ease;
+  box-shadow: 0 10px 25px rgba(0,0,0,.35);
+}
+.watch-cam.is-visible { opacity: 1; transform: scale(1); }
+.watch-cam svg { width: 2.25rem; height: 2.25rem; }
+.watch-cam-dot {
+  position: absolute; top: .35rem; right: .45rem; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--security-red);
+  animation: hud-blink 1.4s steps(1) infinite;
+}
+#watch-cam-head { transition: none; }
+@media (max-width: 639px) {
+  .watch-cam { top: auto; bottom: 5.5rem; left: 1rem; width: 2.5rem; height: 2.5rem; }
+  .watch-cam svg { width: 1.9rem; height: 1.9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .watch-cam-dot { animation: none; }
+  .watch-cam { transition: opacity .01s linear; }
 }
