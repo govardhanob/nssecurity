@@ -6,6 +6,7 @@
   --brand-orange:#F47B20; --brand-orange-hover:#ea580c; --brand-orange-light:#fff4ed;
   --light-bg:#F8FAFC; --light-section:#EFF3F8; --light-border:#E2E8F0;
   --slate-body:#475569; --slate-heading:#0F172A;
+  --security-green:#22C55E; --security-red:#ef4444;
   --font-sans: 'Plus Jakarta Sans', sans-serif;
   --radius-lg: 1rem; --radius-xl: 1.25rem;
 }
@@ -65,6 +66,10 @@ a { color: inherit; text-decoration: none; }
 }
 .brand-name { font-weight: 800; font-size: 1.125rem; color: #fff; line-height: 1.2; }
 .brand-tag { font-size: .75rem; color: #94a3b8; font-weight: 500; }
+.brand-mark svg { transition: transform .5s ease; }
+@keyframes cam-pan { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+.brand:hover .brand-mark svg { animation: cam-pan .6s ease-in-out; }
+@media (prefers-reduced-motion: reduce) { .brand:hover .brand-mark svg { animation: none; } }
 
 .nav-links { display: none; gap: 1.75rem; font-size: .875rem; font-weight: 600; color: #cbd5e1; }
 .nav-links a:hover, .nav-links a.active { color: var(--brand-orange); }
@@ -111,7 +116,35 @@ section { position: relative; }
 
 .hero { background: var(--navy-dark); padding: 2.5rem 0 4rem; overflow: hidden; }
 @media (min-width: 1024px) { .hero { padding: 5rem 0; } }
-.hero-grid { display: grid; gap: 3rem; align-items: center; }
+
+.hero-bg-grid {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(var(--navy-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: .3;
+  pointer-events: none;
+}
+.hero-bg-glow {
+  position: absolute; top: -8rem; left: -8rem; width: 24rem; height: 24rem;
+  background: var(--brand-orange); opacity: .12; border-radius: 50%; filter: blur(90px);
+  pointer-events: none;
+}
+.hero-radar {
+  position: absolute; top: 45%; left: 68%; width: 40rem; height: 40rem;
+  transform: translate(-50%, -50%) rotate(0deg);
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(244,123,32,.16) 16deg, transparent 42deg, transparent 360deg);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: hero-radar-spin 16s linear infinite;
+}
+@keyframes hero-radar-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) { .hero-radar { animation: none; } }
+@media (max-width: 767px) { .hero-radar { display: none; } }
+
+.hero-grid { position: relative; display: grid; gap: 3rem; align-items: center; }
 @media (min-width: 1024px) { .hero-grid { grid-template-columns: 7fr 5fr; gap: 3.5rem; } }
 .hero-badge {
   display: inline-flex; align-items: center; gap: .625rem; align-self: flex-start;
@@ -132,6 +165,45 @@ section { position: relative; }
 .hero-image-card img { width: 100%; height: 24rem; object-fit: cover; }
 .hero-image-card .overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(4,13,22,.95), rgba(4,13,22,.25) 55%, transparent); pointer-events: none; }
 .hero-image-caption { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; background: rgba(7,21,34,.95); backdrop-filter: blur(8px); border: 1px solid rgba(28,50,73,.8); border-radius: .875rem; padding: 1rem; display: flex; gap: .75rem; }
+
+/* --- Hero image CCTV-monitor HUD overlay --- */
+.hud-scanline {
+  position: absolute; left: 0; right: 0; top: -35%; height: 35%; z-index: 1;
+  background: linear-gradient(to bottom, transparent, rgba(244,123,32,.18), transparent);
+  animation: hud-scan 4.5s linear infinite;
+  pointer-events: none;
+}
+@keyframes hud-scan { from { top: -35%; } to { top: 100%; } }
+@media (prefers-reduced-motion: reduce) { .hud-scanline { animation: none; display: none; } }
+
+.hud-corners { position: absolute; inset: 1rem; bottom: 5.5rem; z-index: 1; pointer-events: none; }
+.hud-corner { position: absolute; width: 1.5rem; height: 1.5rem; border-color: var(--brand-orange); opacity: .9; }
+.hud-corner.tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; border-radius: 4px 0 0 0; }
+.hud-corner.tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; border-radius: 0 4px 0 0; }
+.hud-corner.bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; border-radius: 0 0 0 4px; }
+.hud-corner.br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; border-radius: 0 0 4px 0; }
+
+.hud-badge {
+  position: absolute; top: 1rem; z-index: 2;
+  display: flex; align-items: center; gap: .4rem;
+  background: rgba(4,13,22,.75); border: 1px solid rgba(255,255,255,.15);
+  padding: .3rem .6rem; border-radius: .4rem;
+  font-size: .7rem; font-weight: 700; letter-spacing: .05em;
+  font-variant-numeric: tabular-nums;
+}
+.hud-badge.hud-rec { right: 1rem; color: #fff; }
+.hud-badge.hud-live { left: 1rem; color: var(--security-green); }
+.hud-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.hud-dot.rec { background: var(--security-red); animation: hud-blink 1.4s steps(1) infinite; }
+.hud-dot.live { background: var(--security-green); animation: hud-live-pulse 2s ease-in-out infinite; }
+@keyframes hud-blink { 50% { opacity: .15; } }
+@keyframes hud-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.45); }
+  50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-dot.rec, .hud-dot.live { animation: none; }
+}
 
 .trust-strip { background: var(--navy-charcoal); border-top: 1px solid rgba(28,50,73,.7); border-bottom: 1px solid rgba(28,50,73,.7); padding: 1.5rem 0; }
 .trust-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }

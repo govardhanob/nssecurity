@@ -68,13 +68,23 @@ const revealTargets = document.querySelectorAll(
   '.brand-card, .process-step, .area-card, .benefit-card, .faq-item, .checklist-item, .contact-panel'
 );
 
+// Stagger cards within the same grid so they reveal in sequence rather than all at once.
+document.querySelectorAll('.services-grid, .solutions-grid, .brands-grid, .process-grid, .areas-grid, .benefit-grid')
+  .forEach((group) => {
+    [...group.children].forEach((child, i) => { child.dataset.staggerIndex = i; });
+  });
+
 if (typeof gsap !== 'undefined' && !prefersReducedMotion && 'IntersectionObserver' in window) {
-  revealTargets.forEach((el) => { gsap.set(el, { opacity: 0, y: 20 }); });
+  revealTargets.forEach((el) => { gsap.set(el, { opacity: 0, y: 20, scale: 0.96 }); });
 
   const revealObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      gsap.to(entry.target, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
+      const idx = Number(entry.target.dataset.staggerIndex || 0);
+      gsap.to(entry.target, {
+        opacity: 1, y: 0, scale: 1, duration: 0.6,
+        delay: Math.min(idx * 0.06, 0.3), ease: 'power2.out',
+      });
       observer.unobserve(entry.target);
     });
   }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
@@ -82,6 +92,19 @@ if (typeof gsap !== 'undefined' && !prefersReducedMotion && 'IntersectionObserve
   revealTargets.forEach((el) => revealObserver.observe(el));
 } else {
   revealTargets.forEach((el) => { el.style.opacity = '1'; el.style.transform = 'none'; });
+}
+
+// --- Hero HUD timestamp (decorative CCTV monitor overlay, ticks with real local time) ---
+const hudTimestamp = document.getElementById('hud-timestamp');
+if (hudTimestamp) {
+  const pad = (n) => String(n).padStart(2, '0');
+  function tickTimestamp() {
+    const d = new Date();
+    hudTimestamp.textContent =
+      `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  tickTimestamp();
+  setInterval(tickTimestamp, 1000);
 }
 
 // --- Contact form -> WhatsApp prefill ---
