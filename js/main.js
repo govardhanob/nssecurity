@@ -41,3 +41,23 @@ function setActiveLink() {
 }
 window.addEventListener('scroll', setActiveLink, { passive: true });
 setActiveLink();
+
+// --- Motion preference ---
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// --- Hero entrance ---
+if (typeof gsap !== 'undefined' && !prefersReducedMotion) {
+  gsap.set(['.hero-badge', '.hero h1', '.hero .lead', '.hero-ctas', '.hero-meta', '.hero-image-card'], { opacity: 0, y: 24 });
+  const heroTl = gsap.timeline({ defaults: { duration: 0.7, ease: 'power2.out' } });
+  heroTl
+    .to('.hero-badge', { opacity: 1, y: 0 })
+    .to('.hero h1', { opacity: 1, y: 0 }, '-=0.4')
+    .to('.hero .lead', { opacity: 1, y: 0 }, '-=0.45')
+    .to('.hero-ctas', { opacity: 1, y: 0 }, '-=0.4')
+    .to('.hero-meta', { opacity: 1, y: 0 }, '-=0.35')
+    .to('.hero-image-card', { opacity: 1, y: 0, duration: 0.9 }, '-=0.6');
+} else {
+  // No GSAP or reduced motion: ensure content is visible with no animation.
+  document.querySelectorAll('.hero-badge, .hero h1, .hero .lead, .hero-ctas, .hero-meta, .hero-image-card')
+    .forEach((el) => { el.style.opacity = '1'; el.style.transform = 'none'; });
+}
